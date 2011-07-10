@@ -19,12 +19,16 @@ class Upsidedownternet(Plugin):
         if request.isImageRequest:
             request.isImageRequest = False
             request.isImage = True
-        else:
-            request.isImage = False
+            request.imageType = value.split("/")[1].upper() 
     def handleResponse(self,request,data):
-        if request.isImage:
+        try:
+            isImage = getattr(request,'isImage')
+        except AttributeError:
+            isImage = False
+
+        if isImage:
             try:
-                image_type=get_img_type(request)
+                image_type=request.imageType
                 #For some reason more images get parsed using the parser
                 #rather than a file...PIL still needs some work I guess
                 p = ImageFile.Parser()
@@ -34,9 +38,8 @@ class Upsidedownternet(Plugin):
                 output = StringIO()
                 im.save(output,format=image_type)
                 data=output.getvalue()
-                open("/tmp/test.%s"%image_type,"w").write(output.getvalue())
                 output.close()
+                logging.info("Flipped image")
             except Exception as e:
-                print "EXCEPTION"
-                print e
+                print "Error: %s" % e
         return {'request':request,'data':data}
