@@ -32,4 +32,4 @@ class BrowserPwn(Plugin):
 
     def add_options(self,options):
         options.add_argument("--msf-uri",type=str,default="http://127.0.0.1:8080/",
-                help="The IP address or range of your victim (default 127.0.0.1)")
+                help="The attack URI given to you by MSF")
