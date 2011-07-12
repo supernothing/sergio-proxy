@@ -74,7 +74,7 @@ class FilePwn(Plugin):
         options.add_argument("--msf-payload-opts",type=str,default="LHOST=127.0.0.1 LPORT=4444",
                 help="Options for payload (default: \"LHOST=127.0.0.1 LPORT=4444\")")
         options.add_argument("--pdf",action="store_true",
-                help="Intercept PDFs and replace malicious.")
+                help="Intercept PDFs and replace with malicious.")
         options.add_argument("--exe",action="store_true",
                 help="Intercept exe files and replace with malicious.")
         options.add_argument("--exe-file",type=str,
