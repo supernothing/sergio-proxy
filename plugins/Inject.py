@@ -1,11 +1,12 @@
 import os,subprocess,logging,time,re
 import argparse
 from plugins.plugin import Plugin
+from plugins.CacheKill import CacheKill
 
-class Inject(Plugin):
+class Inject(CacheKill,Plugin):
     name = "Inject"
     optname = "inject"
-    implements = ["handleResponse"]
+    implements = ["handleResponse","handleHeader","connectionMade"]
     has_opts = True
     log_level = logging.DEBUG
     desc = "Inject arbitrary content into encountered HTML files."
@@ -19,6 +20,11 @@ class Inject(Plugin):
         self.per_domain = options.per_domain
         self.match_str = options.match_str
         self.html_payload = options.html_payload
+
+        if self.options.preserve_cache:
+            self.implements.remove("handleHeader")
+            self.implements.remove("connectionMade")
+
         if options.html_file != None:
             self.html_payload += options.html_file.read()
 
@@ -26,7 +32,6 @@ class Inject(Plugin):
         self.dtable = {}
         self.count = 0
         self.mime = "text/html"
-
     def handleResponse(self,request,data):
         #We throttle to only inject once every two seconds per client
         #If you have MSF on another host, you may need to check prior to injection
@@ -62,6 +67,8 @@ class Inject(Plugin):
                 help="Inject once every RATE_LIMIT seconds per client.")
         options.add_argument("--count-limit",type=int,
                 help="Inject only COUNT_LIMIT times per client.")
+        options.add_argument("--preserve-cache",action="store_true",
+                help="Don't kill the server/client caching.")
 
     def _should_inject(self,ip,hn,mime):
         if self.count_limit==self.rate_limit==None and not self.per_domain:
