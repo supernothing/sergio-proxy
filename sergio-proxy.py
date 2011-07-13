@@ -44,7 +44,8 @@ sergio_version = "0.2"
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
            description="Sergio Proxy v0.2 - An HTTP MITM Tool",
-           epilog="Use wisely, young Padawan.")
+           epilog="Use wisely, young Padawan.",
+           fromfile_prefix_chars='@' )
     #add sslstrip options
     sgroup = parser.add_argument_group("sslstrip",
            "Options for sslstrip library")
@@ -80,8 +81,13 @@ if __name__ == "__main__":
     #Give subgroup to each plugin with options
     try:
         for p in plugins:
-            sgroup = parser.add_argument_group("%s" % p.name,
+            if p.desc == "":
+                sgroup = parser.add_argument_group("%s" % p.name,
                     "Options for %s." % p.name)
+            else:
+                sgroup = parser.add_argument_group("%s" % p.name,
+                    p.desc)
+                
             sgroup.add_argument("--%s" % p.optname, action="store_true",
                     help="Load plugin %s" % p.name)
             if p.has_opts:
