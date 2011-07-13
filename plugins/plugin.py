@@ -6,6 +6,7 @@ can get called during the MITM attack.
 class Plugin(object):
     name = "Generic plugin"
     optname = "generic"
+    desc = ""
     implements = []
     has_opts = False
     def __init__(self):

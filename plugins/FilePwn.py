@@ -1,6 +1,5 @@
 import os,subprocess,logging,time
 from plugins.plugin import Plugin
-from MITMUtils import *
 
 exe_mimetypes = ['application/octet-stream', 'application/x-msdownload', 'application/exe', 'application/x-exe', 'application/dos-exe', 'vms/exe', 'application/x-winexe', 'application/msdos-windows', 'application/x-msdos-program']
 
@@ -10,7 +9,7 @@ class FilePwn(Plugin):
     implements = ["handleResponse"]
     has_opts = True
     log_level = logging.DEBUG
-
+    desc = "Replace files being downloaded via HTTP with malicious versions."
     def initialize(self,options):
         '''Called if plugin is enabled, passed the options namespace'''
         self.options = options
