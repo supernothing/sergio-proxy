@@ -73,8 +73,8 @@ if __name__ == "__main__":
     sgroup = parser.add_argument_group("MSF",
             "Generic Options for MSF integration")
 
-    sgroup.add_argument("--msf-path",type=str,default="/pentest/exploits/framework3/",
-            help="Path to msf (default: /pentest/exploits/framework3)")
+    sgroup.add_argument("--msf-path",type=str,default="/pentest/exploits/framework/",
+            help="Path to msf (default: /pentest/exploits/framework)")
 
     #Initialize plugins
     plugins = []
