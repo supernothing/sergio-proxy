@@ -37,13 +37,12 @@ import argparse
 from plugins import *
 plugin_classes = plugin.Plugin.__subclasses__()
 
-
 sslstrip_version = "0.9"
 sergio_version = "0.2"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-           description="Sergio Proxy v0.2 - An HTTP MITM Tool",
+           description="Sergio Proxy v%s - An HTTP MITM Tool" % sergio_version,
            epilog="Use wisely, young Padawan.",
            fromfile_prefix_chars='@' )
     #add sslstrip options
@@ -69,7 +68,14 @@ if __name__ == "__main__":
             help="Substitute a lock favicon on secure requests.")
     sgroup.add_argument("-k","--killsessions",action="store_true",
             help="Kill sessions in progress.")
-    
+   
+    #add msf options
+    sgroup = parser.add_argument_group("MSF",
+            "Generic Options for MSF integration")
+
+    sgroup.add_argument("--msf-path",type=str,default="/pentest/exploits/framework3/",
+            help="Path to msf (default: /pentest/exploits/framework3)")
+
     #Initialize plugins
     plugins = []
     try:
@@ -96,6 +102,7 @@ if __name__ == "__main__":
         print "Plugin %s claimed option support, but didn't have it." % p.name
 
     args = parser.parse_args()
+    args.full_path = os.path.dirname(os.path.abspath(__file__))
     
     log_level = logging.__dict__[args.log_level.upper()]
     

@@ -74,14 +74,14 @@ class Inject(CacheKill,Plugin):
         if self.count_limit==self.rate_limit==None and not self.per_domain:
             return True
         if self.count_limit != None and self.count > self.count_limit:
-            print "1"
+            #print "1"
             return False
         if self.rate_limit != None:
             if ip in self.ctable and time.time()-self.ctable[ip]<self.rate_limit:
                 return False
         if self.per_domain:
             return not ip+hn in self.dtable
-        print mime
+        #print mime
         return mime.find(self.mime)!=-1
             
     def _get_req_info(self,request):
