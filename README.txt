@@ -34,6 +34,14 @@ arpspoof or ettercap if you want to use ArpSpoof plugin
 Python (obviously)
 
 
+USAGE
+========================
+Running sergio-proxy with -h will print out all the available options.
+
+Also see the example argument files in the examples folder. These can be
+used as follows:
+./sergio-proxy --myoption1 --myoption2  @file1.args @file2.args ...
+
 TODO
 ========================
 * HTTP/1.1 Support - this will involve modifying twisted itself, so don't hold
