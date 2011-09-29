@@ -2,7 +2,6 @@ import logging
 from cStringIO import StringIO
 
 from plugins.plugin import Plugin
-from MITMUtils import *
 
 class Upsidedownternet(Plugin):
     name = "Upsidedownternet"

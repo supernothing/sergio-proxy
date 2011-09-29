@@ -28,7 +28,7 @@ class ArpSpoof(Plugin):
         
         logging.log(self.log_level,"Starting arp spoofing...")
         if options.use_ettercap:
-            self.run_subprocess("sudo ettercapi -i %s -T -o -M arp /%s/ /%s/"\
+           self.run_subprocess("sudo ettercap -i %s -T -o -M arp /%s/ /%s/"\
                     % (options.input_if,self.vic_ip,self.router_ip))
         else:
             self.run_subprocess("sudo arpspoof -i %s -t %s %s"\

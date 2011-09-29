@@ -1,5 +1,4 @@
 from plugins.plugin import Plugin
-'''
 #Uncomment to use
 class Test(Plugin):
     name = "Test"
@@ -11,10 +10,7 @@ class Test(Plugin):
                 help="This is a test option")
     def initialize(self,options):
         self.worked = options.test
-        if self.worked:
-            print "Hurrah!"
-        else:
-            print "Fail."
     def handleResponse(self,request,data):
-        print "Response received..."
-'''
+        print "http://" + request.client.getRequestHostname() + request.uri
+
+
