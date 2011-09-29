@@ -1,6 +1,5 @@
 from plugins.plugin import Plugin
 #Uncomment to use
-'''
 class Test(Plugin):
     name = "Test"
     optname = "test"
@@ -13,4 +12,3 @@ class Test(Plugin):
         self.worked = options.test
     def handleResponse(self,request,data):
         print "http://" + request.client.getRequestHostname() + request.uri
-'''

@@ -38,7 +38,7 @@ from plugins import *
 plugin_classes = plugin.Plugin.__subclasses__()
 
 sslstrip_version = "0.9"
-sergio_version = "0.2"
+sergio_version = "0.2.1"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
