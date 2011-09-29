@@ -7,7 +7,7 @@ class SMBAuth(Inject,Plugin):
     desc = "Evoke SMB challenge-response auth attempt.\nInherits from Inject."
     def initialize(self,options):
         Inject.initialize(self,options)
-        self.target_ip = options.target_ip
+        self.target_ip = options.msf_lhost
         self.html_payload = self._get_data()
         if options.start_auth_sniffer and options.msf_rc == "/tmp/tmp.rc":
             options.msf_user = "root"
@@ -16,8 +16,6 @@ class SMBAuth(Inject,Plugin):
             f.write("exploit -j\n")
             f.close()
     def add_options(self,options):
-        options.add_argument("--target-ip",type=str,default="127.0.0.1",
-                help="The IP address of your malicious SMB server")
         options.add_argument("--start-auth-sniffer",action="store_true",
                 help="Starts MSF and sets up the credentials sniffer.")
     def _get_data(self):

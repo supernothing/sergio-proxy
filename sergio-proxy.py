@@ -79,6 +79,8 @@ if __name__ == "__main__":
             help="Specify a custom rc file (overrides all other settings)")
     sgroup.add_argument("--msf-user",type=str,default="root",
             help="Specify what user to run Metasploit under.")
+    sgroup.add_argument("--msf-lhost",type=str,default="192.168.1.1",
+            help="The IP address Metasploit is listening at.")
 
     #Initialize plugins
     plugins = []

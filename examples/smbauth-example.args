@@ -1,4 +1,2 @@
 --smbauth
---target-ip
-192.168.1.100
 --start-auth-sniffer

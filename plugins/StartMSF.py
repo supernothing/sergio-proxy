@@ -70,10 +70,8 @@ class StartMSF(Plugin):
         options.add_argument("--msf-payload",type=str,
             default="windows/meterpreter/reverse_tcp",
             help="The payload you want to be executed")
-        options.add_argument("--msf-lhost",type=str,default="",
-            help="The IP address you wish to connect back to.")
         options.add_argument("--msf-lport",type=str,default="4444",
-            help="The port you wish to connect back to.")
+            help="The port you wish to connect back to. (default: 4445)")
         options.add_argument("--msf-uripath",type=str,default="/",
             help="Specify what URI path the exploit should use.")
 
