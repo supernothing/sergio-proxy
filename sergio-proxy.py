@@ -75,6 +75,10 @@ if __name__ == "__main__":
 
     sgroup.add_argument("--msf-path",type=str,default="/pentest/exploits/framework/",
             help="Path to msf (default: /pentest/exploits/framework)")
+    sgroup.add_argument("--msf-rc",type=str,default="/tmp/tmp.rc",
+            help="Specify a custom rc file (overrides all other settings)")
+    sgroup.add_argument("--msf-user",type=str,default="root",
+            help="Specify what user to run Metasploit under.")
 
     #Initialize plugins
     plugins = []
@@ -102,6 +106,9 @@ if __name__ == "__main__":
         print "Plugin %s claimed option support, but didn't have it." % p.name
 
     args = parser.parse_args()
+    if args.msf_rc == "/tmp/tmp.rc":
+        #need to wipe
+        open(args.msf_rc,"w").close()
     args.full_path = os.path.dirname(os.path.abspath(__file__))
     
     log_level = logging.__dict__[args.log_level.upper()]
@@ -119,6 +126,11 @@ if __name__ == "__main__":
                 load.append(p)
     except NotImplementedError:
         print "Plugin %s lacked initialize function." % p.name
+
+    #this whole msf loading process sucks. need to improve
+    if args.msf_rc != "/tmp/tmp.rc" or os.stat("/tmp/tmp.rc").st_size != 0:
+        from plugins.StartMSF import launch_msf
+        launch_msf(args.msf_path,args.msf_rc,args.msf_user)
 
     #Plugins are ready to go, start MITM
     URLMonitor.getInstance().setFaviconSpoofing(args.favicon)

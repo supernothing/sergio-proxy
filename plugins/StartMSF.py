@@ -22,7 +22,8 @@ def which(program):
                 return exe_file
     return None
 
-def launch_msf(msfc,rcpath,user):
+def launch_msf(msfp,rcpath,user):
+    msfc = os.path.join(msfp,"msfconsole")
     if which("gnome-terminal"):
         cmd = "gnome-terminal" 
     elif which("konsole"):
@@ -42,15 +43,11 @@ class StartMSF(Plugin):
     def initialize(self,options):
         if options.msf_lhost == "" and options.msf_payload.find("reverse") != -1:
             options.msf_lhost = raw_input("Local IP not provided. Please enter now: ")
-        if not options.msf_rc:
+        if options.msf_rc == "/tmp/tmp.rc":
             path = self._create_rc(options)
-        else:
-            path = options.msf_rc
-        msfc = os.path.join(options.msf_path,"msfconsole")
-        launch_msf(msfc,path,options.msf_user)
 
     def _create_rc(self,options):
-        f = open("/tmp/temp.rc","w")
+        f = open(options.msf_rc,"a")
         f.write(
         '''
             use %s
@@ -64,8 +61,7 @@ class StartMSF(Plugin):
         ''' % (options.msf_exploit,options.msf_payload,options.msf_lhost,
                 options.msf_lport,options.msf_uripath)
         )
-        f.flush()
-        #f.close()
+        f.close()
         return f.name
     def add_options(self,options):
         options.add_argument("--msf-exploit",type=str,
@@ -80,10 +76,6 @@ class StartMSF(Plugin):
             help="The port you wish to connect back to.")
         options.add_argument("--msf-uripath",type=str,default="/",
             help="Specify what URI path the exploit should use.")
-        options.add_argument("--msf-rc",type=str,default="",
-            help="Specify a custom rc file (overrides all other settings)")
-        options.add_argument("--msf-user",type=str,default="root",
-            help="Specify what user to run Metasploit under.")
 
 
 
