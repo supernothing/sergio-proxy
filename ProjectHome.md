@@ -1,0 +1,3 @@
+Sergio Proxy was created to deal with some of the significant shortcomings that Ettercap filters have when modifying HTTP traffic. It tries to provide an easily extensible Python interface for on-the-fly manipulation of HTTP traffic.
+
+Currently, Sergio Proxy already has a number of helpful plugins that allow you to set up the MITM attack, inject arbitrary data into a session, launch browser attacks from Metasploit, and dynamically replace files with malicious versions.
